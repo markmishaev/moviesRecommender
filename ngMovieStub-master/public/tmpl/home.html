@@ -1,0 +1,20 @@
+<h2>Movies Recommender - Rate Movies Online (Data Mining Course - SCE 2015)</h2>
+<input type="text" placeholder="Search Movies" class="form-control" data-ng-model="search">
+<link rel='stylesheet prefetch' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css'>
+<link rel='stylesheet prefetch' href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css'>
+<script src='http://codepen.io/assets/libs/fullpage/angular.js'></script>
+ <div class="">
+    <!-- Example row of columns -->
+    <div class="row movies-list">
+        <div class="col-md-4" data-ng-repeat="movie in movies | orderBy:'name':false | filter:search">
+            <h2>{{movie.name | uppercase}}</h2>
+            <p>
+                <img data-ng-src="{{movie.thumb}}" class="thumb-big">
+            </p>
+            <p>
+			   <a ng-controller="RatingCtrl" star-rating ng-model="rating1" max="5" on-rating-selected="rateFunction(rating, movie.id )"></a>										
+            </p>
+        </div>
+    </div>
+</div>
+
