@@ -1,10 +1,23 @@
-movieStubApp.controller("RatingCtrl", function($scope) {
-  $scope.rating1 = 1;
-  $scope.isReadonly = true;
-  $scope.rateFunction = function(rating)
-  {
-		console.log("Rating selected: " + rating);
-  };
+movieStubApp.controller("RatingCtrl", function($scope, $http,  $log) 
+{
+ 	$scope.rating1 = 1;
+	$scope.isReadonly = true;
+	$scope.$log = $log;
+	$scope.message = 'Hello World!';
+	
+	$scope.rateFunction = function(rating1)
+	{
+		 $http.post("/addMovie", 
+				 { rating: rating1 }, { headers: { "Content-Type": "application/json" } })
+         .success( function(response) {
+            console.log("success");
+        }).
+        error( function(response) {
+            console.log("error");
+        });
+		
+		console.log("Rating selected: " + rating1);
+	};
 })
 movieStubApp.directive("starRating", function() {
   return {

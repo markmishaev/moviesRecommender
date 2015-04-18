@@ -6,6 +6,21 @@ var request = require("request")
 var express = require('express')
 var bodyParser = require('body-parser')
 
+var mongoose = require('mongoose');
+mongoose.connect('mongodb://localhost/movies');
+ 
+var db = mongoose.connection;
+ 
+db.on('error', function (err) 
+{
+	console.log('connection error', err);
+});
+db.once('open', function () 
+{
+	console.log('connected.');
+});
+
+
 var app = express()
 var bookings = [];
 var requests = [];
@@ -16,8 +31,8 @@ app.use(bodyParser.json())
 
 var file = './data/generatedMovies.json'
 var file1 = './data/generatedMovies1.json'
-fs.unlink(file, function (err) {});
-fs.unlink(file1, function (err) {});
+//fs.unlink(file, function (err) {});
+//fs.unlink(file1, function (err) {});
 var array = fs.readFileSync('./data/movies.dat').toString().split("\n");
 
 for(var i = 1; i <= filesNumber; i++) 
@@ -38,7 +53,7 @@ for(var i = 1; i <= filesNumber; i++)
 	requests.push(data);
 }
 
-makeMoviesRequests(0);
+//makeMoviesRequests(0);
 
 // This function repeatedly calls itself until all requests are done.
 function makeMoviesRequests(index) 
@@ -135,6 +150,12 @@ app.post('/book', function (req, res) {
     bookings.push(data);
     // res.render('public/tmpl/bookings.html');
     res.json(bookings);
+});
+
+
+app.post('/addMovie', function (req, res) {
+    
+    console.log(req.body.rating.toString());
 });
 
 app.listen(port);
