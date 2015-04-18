@@ -2,6 +2,7 @@ var port = process.env.PORT || 2595;
 var fs = require('fs');
 var S = require('string');
 var request = require("request")
+var Movie = require('./public/js/models/movie');
 	
 var express = require('express')
 var bodyParser = require('body-parser')
@@ -155,7 +156,23 @@ app.post('/book', function (req, res) {
 
 app.post('/addMovie', function (req, res) {
     
+	var movie = new Movie({
+	  movieId: req.body.id,
+	  movieName: req.body.name,
+	  movieRating: req.body.rating 
+	});
+
+	// call the built-in save method to save to the database
+	movie.save(function(err) {
+	  if (err) throw err;
+
+	  console.log('Movie saved successfully!');
+	});
+	
     console.log(req.body.rating.toString());
+    console.log(req.body.id.toString());
+    console.log(req.body.name.toString());
+    
 });
 
 app.listen(port);
