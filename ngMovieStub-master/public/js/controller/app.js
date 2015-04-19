@@ -1,6 +1,5 @@
 movieStubApp.controller("RatingCtrl", function($scope, $http,  $log) 
 {
- 	$scope.rating1 = 1;
 	$scope.isReadonly = true;
 	$scope.$log = $log;
 	$scope.message = 'Hello World!';

@@ -3,6 +3,7 @@ var fs = require('fs');
 var request = require("request")
 var Movie = require('./public/js/models/movie');
 var MoviesData = require('./data/moviesData');
+var file1 = './data/generatedMovies1.json'
 	
 var express = require('express')
 var bodyParser = require('body-parser')
@@ -29,7 +30,7 @@ var bookings = [];
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 
-MoviesData.makeMoviesRequests(0);
+//MoviesData.prepareMovieData(0);
 
 		
 app.set("view options", {
@@ -43,7 +44,7 @@ app.get('/', function (req, res) {
 
 app.get('/movies', function (req, res) 
 {
-    var movies1 = require(file1);	
+    var movies1 = require(MoviesData.getOutputFileName());	
     res.json(movies1);
 });
 

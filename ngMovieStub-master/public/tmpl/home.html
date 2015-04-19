@@ -12,7 +12,7 @@
                 <img data-ng-src="{{movie.thumb}}" class="thumb-big">
             </p>
             <p>
-			   <a ng-init="movieId=movie.id; movieName=movie.name;" ng-controller="RatingCtrl" star-rating ng-model="rating1" max="5" on-rating-selected="rateFunction(rating)"></a>										
+			   <a ng-init="movieId=movie.id; movieName=movie.name; rating1=movie.rating;" ng-controller="RatingCtrl" star-rating ng-model="rating1" max="5" on-rating-selected="rateFunction(rating)"></a>										
             </p>
         </div>
     </div>

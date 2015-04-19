@@ -4,29 +4,42 @@ var request = require("request")
 
 
 var requests = [];
-var filesNumber = 20;
+var filesNumber = 50;
 var file = './data/generatedMovies.json'
 var file1 = './data/generatedMovies1.json'
-fs.unlink(file, function (err) {});
-fs.unlink(file1, function (err) {});
-var array = fs.readFileSync('./data/movies.dat').toString().split("\n");
 
-for(var i = 1; i <= filesNumber; i++) 
+
+exports.getOutputFileName = function () 
 {
-	var arr = array[i].split("::");
-	var id = S(arr[0]);
-	var movieStr = S(arr[1]);
-	var pos = movieStr.indexOf('(');
-	var shortMovieNameStr = movieStr.substr(0, pos-1);
-	var shortMoveNameStrWithNoSpaces = shortMovieNameStr.replaceAll(' ', '+').s	
-	var url = "http://www.omdbapi.com/?t=" + shortMoveNameStrWithNoSpaces + "&y=&plot=short&r=json"
+	return file1;
+}
 	
-	var data = {
-					'url': url,
-					'id': id
-				};	
+exports.prepareMovieData = function () 
+{
+	fs.unlink(file, function (err) {});
+	fs.unlink(file1, function (err) {});
+	var array = fs.readFileSync('./data/movies.dat').toString().split("\n");
 	
-	requests.push(data);
+	for(var i = 1; i <= filesNumber; i++) 
+	{
+		var arr = array[i].split("::");
+		var id = S(arr[0]);
+		var movieStr = S(arr[1]);
+		var pos = movieStr.indexOf('(');
+		var shortMovieNameStr = movieStr.substr(0, pos-1);
+		var shortMoveNameStrWithNoSpaces = shortMovieNameStr.replaceAll(' ', '+').s	
+		var url = "http://www.omdbapi.com/?t=" + shortMoveNameStrWithNoSpaces + "&y=&plot=short&r=json"
+		
+		var data = {
+						'url': url,
+						'id': id
+					};	
+		
+		requests.push(data);
+		
+	}
+	
+	exports.makeMoviesRequests(0);
 }
 
 //This function repeatedly calls itself until all requests are done.
@@ -55,7 +68,8 @@ exports.makeMoviesRequests = function (index)
 						var data = {
 										'name': body['Title'],
 										'thumb': body['Poster'],
-										'id': varJsonObj.id.toString()
+										'id': varJsonObj.id.toString(),
+										'rating': Math.round(Number(body['imdbRating'])/10*5)
 									};							
 						fs.appendFile(file, JSON.stringify(data) + '\r\n', function (err) {});					
 					}					
