@@ -49,7 +49,6 @@ app.use(passport.session());    // Add passport initialization
 app.set("view options", {
     layout: false
 });
-app.set('views', __dirname + '/views');
 app.set('view engine', 'ejs');
 
 app.use(express.static(__dirname + '/public'));
@@ -78,7 +77,7 @@ passport.use(new LocalStrategy(
 		// Define a middleware function to be used for every secured routes
 		var auth = function(req, res, next){
 		  if (!req.isAuthenticated()) 
-		  	res.send(401);
+		  	res.sendStatus(401);
 		  else
 		  	next();
 		};
