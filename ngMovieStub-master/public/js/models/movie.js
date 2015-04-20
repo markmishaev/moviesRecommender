@@ -4,9 +4,11 @@ var Schema = mongoose.Schema;
 
 // create a schema
 var movieSchema = new Schema({
-  movieId: Number,
-  movieName: String,
-  movieRating: Number
+  
+	movieId:    { type: Number, required: true, unique: true },  
+    movieName:   { type: String, required: true },  
+    movieRating:   { type: Number, required: true }  
+  
 });
 
 // the schema is useless so far

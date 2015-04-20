@@ -68,19 +68,44 @@ app.post('/book', function (req, res) {
 
 app.post('/addMovie', function (req, res) {
     
-	var movie = new Movie({
-	  movieId: req.body.id,
-	  movieName: req.body.name,
-	  movieRating: req.body.rating 
-	});
-
-	// call the built-in save method to save to the database
-	movie.save(function(err) {
-	  if (err) throw err;
-
-	  console.log('Movie saved successfully!');
-	});
 	
+	var changed = false;
+	console.log("Movie Id " + req.body.id);
+	
+	Movie.findOne({movieId: req.body.id}, function(err, movie) 
+	{
+	    if (err)
+	    {
+	        console.log("MongoDB Error: " + err);
+	        return false;
+	    }
+	    
+	    if (!movie) {
+	    	
+	    	console.log("No movie found, creating movie item");
+	        
+	        movie = new Movie({
+	    		  movieId: req.body.id,
+	    		  movieName: req.body.name,
+	    		  movieRating: req.body.rating 
+	    		});
+
+	    }
+	    else //movie found
+	    { 
+	    	console.log("Movie found, updating movie item");
+	    	movie.movieRating = req.body.rating;
+	    }
+	
+	    // call the built-in save method to save to the database
+		movie.save(function(err) {
+			if (err) throw err;
+			});
+			    
+	});
+    	
+	
+    
     console.log(req.body.rating.toString());
     console.log(req.body.id.toString());
     console.log(req.body.name.toString());
