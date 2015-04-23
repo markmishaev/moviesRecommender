@@ -1,7 +1,9 @@
 var fs = require('fs');
 var S = require('string');
 var request = require("request")
-
+var Movie = require('../public/js/models/movie');
+var User = require('../public/js/models/user');
+var mongoose = require('mongoose');
 
 var requests = [];
 var filesNumber = 50;
@@ -105,4 +107,80 @@ exports.writeFinalFile =  function()
 	});
 	
 	fs.appendFileSync(file1, '\r\n]');
+}
+
+exports.addMovie = function (req, res) 
+{
+	
+	console.log("Movie Id " + req.body.id);
+	
+	if (req.isAuthenticated())
+	{
+		console.log("Request is authenticated with user id " + req.user._id);
+		User.findOne({_id: req.user._id}, function(err, user) 
+		{
+			console.log("User found " + req.user._id);			
+			
+			//checks if user already rated this movie
+			User.findOne({'movies.movieId': req.body.id}, function(err, ratedUser)
+			{
+			    if(err)
+			    	console.log(err);
+			    
+			    if(!ratedUser)
+				{
+					console.log("No embedded movie found, creating embedded movie item");			        
+			    	user.movies.push( {movieId: req.body.id,
+				    		  movieName: req.body.name,
+				    		  movieRating: req.body.rating} );
+				}
+				else
+				{
+					console.log("Embedded movie found, updating embedded movie item");		
+					for (var i=0; i < user.movies.length; i++)
+						 if (user.movies[i].movieId == req.body.id)
+							 user.movies[i].movieRating = req.body.rating;					
+				}				
+				   // call the built-in save method to save to the database
+			    user.save(function(err) {
+					if (err) throw err;
+					});			
+			    
+			});		    
+		});
+	}
+	else//request is not authenticated, saves general rating information
+	{
+		Movie.findOne({movieId: req.body.id}, function(err, movie) 
+		{
+		    if (err)
+		    {
+		        console.log("MongoDB Error: " + err);
+		        return false;
+		    }
+		    
+		    if (!movie) {
+		    	
+		    	console.log("No movie found, creating movie item");
+		        
+		        movie = new Movie({
+		    		  movieId: req.body.id,
+		    		  movieName: req.body.name,
+		    		  movieRating: req.body.rating 
+		    		});
+	
+		    }
+		    else //movie found
+		    { 
+		    	console.log("Movie found, updating movie item");
+		    	movie.movieRating = req.body.rating;
+		    }
+		
+		    // call the built-in save method to save to the database
+			movie.save(function(err) {
+				if (err) throw err;
+				});
+				    
+		});
+	}
 }

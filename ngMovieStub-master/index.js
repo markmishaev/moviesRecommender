@@ -2,6 +2,7 @@ var port = process.env.PORT || 2595;
 var fs = require('fs');
 var request = require("request")
 var Movie = require('./public/js/models/movie');
+var User = require('./public/js/models/user');
 var MoviesData = require('./data/moviesData');
 var file1 = './data/generatedMovies1.json'
 var http = require('http');
@@ -68,7 +69,7 @@ app.get('/login', function(req, res) {
 
 // process the login form
 app.post('/login', passport.authenticate('local-login', {
-	successRedirect : '/profile', // redirect to the secure profile section
+	successRedirect : '/#', // redirect to the secure profile section
 	failureRedirect : '/login', // redirect back to the signup page if there is an error
 	failureFlash : true // allow flash messages
 }));
@@ -85,7 +86,7 @@ app.get('/signup', function(req, res) {
 
 // process the signup form
 app.post('/signup', passport.authenticate('local-signup', {
-	successRedirect : '/profile', // redirect to the secure profile section
+	successRedirect : '/#', // redirect to the secure profile section
 	failureRedirect : '/signup', // redirect back to the signup page if there is an error
 	failureFlash : true // allow flash messages
 }));
@@ -101,18 +102,17 @@ app.get('/profile', isLoggedIn, function(req, res) {
 	});
 });
 
-// =====================================
-// FACEBOOK ROUTES =====================
-// =====================================
-// route for facebook authentication and login
-app.get('/auth/facebook', passport.authenticate('facebook', { scope : 'email' }));
 
-// handle the callback after facebook has authenticated the user
-app.get('/auth/facebook/callback',
-	passport.authenticate('facebook', {
-		successRedirect : '/profile',
-		failureRedirect : '/'
-	}));
+//route to test if the user is logged in or not 
+app.get('/loggedin', function(req, res) 
+{ res.send(req.isAuthenticated() ? req.user : '0'); }); 
+
+
+app.get('/authenticatedUser', isLoggedIn, function(req, res) {
+	res.render('profile.ejs', {
+		user : req.user // get the user out of session and pass to template
+	});
+});
 
 // =====================================
 // LOGOUT ==============================
@@ -146,50 +146,9 @@ app.get('/movies', function (req, res)
 });
 
 
-app.post('/addMovie', function (req, res) {
-    
-	
-	var changed = false;
-	console.log("Movie Id " + req.body.id);
-	
-	Movie.findOne({movieId: req.body.id}, function(err, movie) 
-	{
-	    if (err)
-	    {
-	        console.log("MongoDB Error: " + err);
-	        return false;
-	    }
-	    
-	    if (!movie) {
-	    	
-	    	console.log("No movie found, creating movie item");
-	        
-	        movie = new Movie({
-	    		  movieId: req.body.id,
-	    		  movieName: req.body.name,
-	    		  movieRating: req.body.rating 
-	    		});
-
-	    }
-	    else //movie found
-	    { 
-	    	console.log("Movie found, updating movie item");
-	    	movie.movieRating = req.body.rating;
-	    }
-	
-	    // call the built-in save method to save to the database
-		movie.save(function(err) {
-			if (err) throw err;
-			});
-			    
-	});
-    	
-	
-    
-    console.log(req.body.rating.toString());
-    console.log(req.body.id.toString());
-    console.log(req.body.name.toString());
-    
+app.post('/addMovie', function (req, res) 
+{
+	MoviesData.addMovie(req,res);
 });
 
 app.listen(port);
